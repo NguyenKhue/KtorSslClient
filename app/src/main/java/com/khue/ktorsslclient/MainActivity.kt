@@ -33,6 +33,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.security.KeyStore
 import java.security.Security
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
@@ -95,7 +96,9 @@ class MainActivity : ComponentActivity() {
             engine {
                 sslManager = { httpsURLConnection ->
                     httpsURLConnection.sslSocketFactory = getSslContext()?.socketFactory
+                    httpsURLConnection.hostnameVerifier = HostnameVerifier { hostname, session ->  true}
                 }
+
             }
         }
 
