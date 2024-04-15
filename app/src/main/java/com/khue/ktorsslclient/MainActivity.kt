@@ -29,10 +29,10 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.conscrypt.Conscrypt
-import java.io.File
-import java.io.FileInputStream
+import java.io.ByteArrayInputStream
 import java.security.KeyStore
 import java.security.Security
+import java.security.cert.CertificateFactory
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
@@ -55,15 +55,43 @@ data class ResponseData(
     val data: Data
 )
 
+val crt = "-----BEGIN CERTIFICATE-----\n" +
+        "MIID2TCCAsGgAwIBAgIUY34cAQzIs2ZFtMC9H8xkHkypw40wDQYJKoZIhvcNAQEL\n" +
+        "BQAwfDELMAkGA1UEBhMCVk4xDDAKBgNVBAgMA0hDTTEMMAoGA1UEBwwDSENNMQsw\n" +
+        "CQYDVQQKDAJTUzELMAkGA1UECwwCc2ExDzANBgNVBAMMBmVwYXBlcjEmMCQGCSqG\n" +
+        "SIb3DQEJARYXMDkwMzIwMDFraHVuZ0BnbWFpbC5jb20wHhcNMjQwNDE1MTczNTIw\n" +
+        "WhcNMjkwNDE0MTczNTIwWjB8MQswCQYDVQQGEwJWTjEMMAoGA1UECAwDSENNMQww\n" +
+        "CgYDVQQHDANIQ00xCzAJBgNVBAoMAlNTMQswCQYDVQQLDAJzYTEPMA0GA1UEAwwG\n" +
+        "ZXBhcGVyMSYwJAYJKoZIhvcNAQkBFhcwOTAzMjAwMWtodW5nQGdtYWlsLmNvbTCC\n" +
+        "ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJbVni9kt04YUxtUO1u+cbbh\n" +
+        "/mYwbA9vVnHZRqp8bUCiTHR8OkVHo/ShiagUt2XfGyUVLUtCwoFdIoMRb5PBxY1X\n" +
+        "1zshZI5zKWU6CrgF4fb2xWjvm0tqLcrviffMT51vnohUGuUO6rMsZHPbToXpOY3R\n" +
+        "Hwh/7Z+NeeRPq8J6tMQM3Yq1y1SyyBlTogj6EWXPuud8M8BcvSNYQH26lQTsOJxo\n" +
+        "4unISol1UOumFEylAUXZWPt8PYvyOXEcK3fQfsA8HHI/wmxB5EieEi8s2/fAAuam\n" +
+        "6vuLERZcGeakcsfkwOkqFeGxzzyaC0Xt/NDxuTAyLMMNTr9R4dbvebcuKB9Ud+0C\n" +
+        "AwEAAaNTMFEwHQYDVR0OBBYEFCryj4bm1Y3/8/CblVEls+mbHJXcMB8GA1UdIwQY\n" +
+        "MBaAFCryj4bm1Y3/8/CblVEls+mbHJXcMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZI\n" +
+        "hvcNAQELBQADggEBAF4b+1PwU42fWBFo+ACnWVd0HQq7V92kX44LCKdjaZM71XIt\n" +
+        "vcptTg1aEolyVSH2j4Ni+3uxiOzXVxY2c75o0C1w/N5Y3jRBzqnMTiw6l7AUzbdw\n" +
+        "eM6veos4UCw5l1ALhquuLzCT7acGYD0iWk6QRQpn5cGuTQlAAFNNMGzm2l3pxvCW\n" +
+        "UWSM2uE665fhqDQET0lLs/FGmGK3V9DSIWo7LB/cr4cp0tFFyOk6Qm3yu+bm4jLF\n" +
+        "kIJG9rhcxvl28Y20ZPZadsWbKLlVv413su8ThmnekM8yXDPxp8Eh504r7miamGf7\n" +
+        "dF0faRatl0DlAITKv0NMjVe5/QRKnZXLB8MpLmU=\n" +
+        "-----END CERTIFICATE-----"
 
 
 class MainActivity : ComponentActivity() {
 
     fun getKeyStore(): KeyStore {
-        val keyStoreFile = FileInputStream(File(applicationContext.filesDir, "keystore.jks"))
-        val keyStorePassword = "123456".toCharArray()
-        val keyStore: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType())
-        keyStore.load(keyStoreFile, keyStorePassword)
+//        val keyStoreFile = FileInputStream(File(applicationContext.filesDir, "keystore.jks"))
+//        val keyStorePassword = "123456".toCharArray()
+//        val keyStore: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+//        keyStore.load(keyStoreFile, keyStorePassword)
+        val certificateFactory = CertificateFactory.getInstance("X509")
+        val epaperCA = certificateFactory.generateCertificate(ByteArrayInputStream(crt.toByteArray()))
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        keyStore.load(null, null)
+        keyStore.setCertificateEntry("khue", epaperCA)
         return keyStore
     }
 
@@ -102,7 +130,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        return client.get("https://10.1.140.124:8443/fruits").body()
+        return client.get("https://192.168.1.4:8443/fruits").body()
     }
 
     companion object {
