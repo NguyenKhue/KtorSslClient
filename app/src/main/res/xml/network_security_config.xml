@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+    <domain-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="@raw/rootca" />
+        </trust-anchors>
+        <domain includeSubdomains="true">10.1.141.187</domain>
+
+    </domain-config>
+</network-security-config>

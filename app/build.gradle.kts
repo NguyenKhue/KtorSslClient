@@ -51,7 +51,7 @@ dependencies {
     implementation(libs.conscrypt.android)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
-    //implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.android)
     //implementation(libs.logback.classic)
     implementation(libs.ktor.serialization.kotlinx.json)
